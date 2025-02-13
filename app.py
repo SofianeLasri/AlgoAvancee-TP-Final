@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
@@ -22,7 +22,7 @@ def analyze():
         tweetIndex = "tweet" + str(i)
         result[tweetIndex] = 0.5
 
-    return result
+    return jsonify(result)
 
 
 if __name__ == '__main__':
