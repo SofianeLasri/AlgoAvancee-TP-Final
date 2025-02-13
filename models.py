@@ -6,7 +6,7 @@ from database import Base
 class Tweet(Base):
     __tablename__ = 'tweets'
     id = Column(Integer, primary_key=True)
-    text = Column(String(500))
+    text = Column(String(500), unique=True)
     positive = Column(Boolean)
     negative = Column(Boolean)
     created_at = Column(TIMESTAMP)

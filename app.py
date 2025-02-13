@@ -3,6 +3,7 @@ import os
 from flask import Flask, request, jsonify
 from flask.cli import load_dotenv
 
+import seed
 from database import init_db
 
 load_dotenv()
@@ -30,6 +31,8 @@ def analyze():
     init_db()
     data = request.get_json()
     tweets = data['tweets']
+
+    seed.verify_database_has_tweets()
 
     result = {}
     for i in range(len(tweets)):

@@ -10,8 +10,6 @@ db_config = {
     'database': os.getenv('MYSQL_DATABASE')
 }
 
-print('mariadb+pymysql://' + db_config['user'] + ':' + db_config['password'] + '@' + db_config['host'] + '/' + db_config['database'] + '?charset=utf8mb4')
-
 engine = create_engine(
     'mariadb+pymysql://' + db_config['user'] + ':' + db_config['password'] + '@' + db_config['host'] + '/' + db_config['database'] + '?charset=utf8mb4'
 )
@@ -24,6 +22,5 @@ Base.query = db_session.query_property()
 
 def init_db():
     import models
-    print("Creating tables")
     Base.metadata.create_all(bind=engine)
     return db_session
