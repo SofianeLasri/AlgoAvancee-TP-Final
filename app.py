@@ -1,7 +1,20 @@
+import os
+
 from flask import Flask, request, jsonify
+from flask.cli import load_dotenv
+
+from database import init_db
+
+load_dotenv()
 
 app = Flask(__name__)
 
+db_config = {
+    'host': os.getenv('DATABASE_HOST'),
+    'user': os.getenv('MYSQL_DATABASE'),
+    'password': os.getenv('MYSQL_PASSWORD'),
+    'database': os.getenv('MYSQL_DATABASE')
+}
 
 @app.route('/')
 def hello_world():  # put application's code here
@@ -14,13 +27,14 @@ def hello_world():  # put application's code here
 # { "tweet1": score1, "tweet2": score2, "tweet3": score3, ... }
 @app.route('/analyze', methods=['POST'])
 def analyze():
+    init_db()
     data = request.get_json()
     tweets = data['tweets']
 
     result = {}
     for i in range(len(tweets)):
-        tweetIndex = "tweet" + str(i)
-        result[tweetIndex] = 0.5
+        tweet_index = "tweet" + str(i)
+        result[tweet_index] = 0.5
 
     return jsonify(result)
 
