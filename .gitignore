@@ -1,2 +1,4 @@
 .idea
 *.env
+/model.joblib
+/vectorizer.joblib
