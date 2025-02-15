@@ -5,7 +5,8 @@ from flask import Flask, request, jsonify
 from flask.cli import load_dotenv
 
 import seed
-from database import init_db
+from database import init_db, db_session
+from models import Tweet
 
 load_dotenv()
 
@@ -40,7 +41,7 @@ def analyze():
     data = request.get_json()
 
     if not data or 'tweets' not in data or not isinstance(data['tweets'], list):
-        return jsonify({"error": "Format invalide"}), 400
+        return jsonify({"error": "Invalid format!"}), 400
 
     model = joblib.load('model.joblib')
     vectorizer = joblib.load('vectorizer.joblib')
@@ -49,6 +50,15 @@ def analyze():
     transformed_tweets = vectorizer.transform(cleaned)
     probas = model.predict_proba(transformed_tweets)[:, 1]
     scores = {f"tweet{i}": float(2 * p - 1) for i, p in enumerate(probas)}
+
+    for i, tweet in enumerate(data['tweets']):
+        tweet = Tweet(
+            text=tweet,
+            positive=scores[f"tweet{i}"] > 0,
+            negative=scores[f"tweet{i}"] < 0
+        )
+        db_session.add(tweet)
+        db_session.commit()
 
     return jsonify(scores)
 
