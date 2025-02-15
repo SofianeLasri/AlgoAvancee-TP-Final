@@ -37,8 +37,8 @@ def seed_database():
     for i in range(len(data['text'])):
         tweet = Tweet(
             text=data['text'][i],
-            positive=data['label'][i] == 1,
-            negative=data['label'][i] == 0
+            positive=data['label'][i] == 0,
+            negative=data['label'][i] == 1
         )
         db_session.add(tweet)
         db_session.commit()
