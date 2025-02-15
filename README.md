@@ -21,3 +21,12 @@ Seule l'adresse /analyze est accessible. Elle acceptes les requêtes POST conten
     "tweets": ["Tu est affreux !", "Il faut beau aujourd'hui."]
 }
 ```
+
+**Exemple de réponse :**
+
+```json
+{
+    "tweet0": -0.3583773813818951,
+    "tweet1": 0.009870971954487606
+}
+```
