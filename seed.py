@@ -44,7 +44,7 @@ def seed_database():
         db_session.add(tweet)
         db_session.commit()
 
-    print("Now we have to train the model.")
+    print("Now we have to train the model...")
     train_model()
 
 

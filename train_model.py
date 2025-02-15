@@ -1,3 +1,9 @@
+import re
+
+from joblib import dump
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.linear_model import LogisticRegression
+
 from database import db_session
 from models import Tweet
 
@@ -13,5 +19,20 @@ def train_model():
     print("Training model...")
     tweets = db_session.query(Tweet).all()
 
-    for tweet in tweets:
-        print(tweet.text + " - " + str(tweet.positive) + " - " + str(tweet.negative))
+    texts = [clean_text(tweet.text) for tweet in tweets]
+    labels = [1 if tweet.positive else 0 for tweet in tweets]
+
+    vectorizer = CountVectorizer(stop_words=french_stopwords, max_features=100)
+    X = vectorizer.fit_transform(texts)
+
+    model = LogisticRegression()
+    model.fit(X, labels)
+
+    dump(model, 'model.joblib')
+    dump(vectorizer, 'vectorizer.joblib')
+    print("Model trained and saved to disk.")
+
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r'[^\w\s]', '', text)
+    return text

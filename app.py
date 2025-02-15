@@ -29,10 +29,15 @@ def hello_world():  # put application's code here
 @app.route('/analyze', methods=['POST'])
 def analyze():
     init_db()
+    seed.verify_database_has_tweets()
+
     data = request.get_json()
+
+    if not data or 'tweets' not in data or not isinstance(data['tweets'], list):
+        return jsonify({"error": "Format invalide"}), 400
+
     tweets = data['tweets']
 
-    seed.verify_database_has_tweets()
 
     result = {}
     for i in range(len(tweets)):
