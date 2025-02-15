@@ -1,5 +1,6 @@
 from database import db_session
 from models import Tweet
+from train_model import train_model
 
 
 def seed_database():
@@ -42,6 +43,9 @@ def seed_database():
         )
         db_session.add(tweet)
         db_session.commit()
+
+    print("Now we have to train the model.")
+    train_model()
 
 
 def verify_database_has_tweets():
