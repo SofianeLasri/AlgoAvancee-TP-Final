@@ -30,3 +30,20 @@ Seule l'adresse /analyze est accessible. Elle acceptes les requêtes POST conten
     "tweet1": 0.009870971954487606
 }
 ```
+
+## Notes techniques
+
+Le projet utilise MariaDB pour stocker les données. Voici le fichier env à copier afin de lancer le projet :
+
+```env
+FLASK_ENV=development
+DATABASE_HOST=db
+DATABASE_PORT=3306
+
+MYSQL_ROOT_PASSWORD=password
+MYSQL_DATABASE=flask
+MYSQL_USER=flask-user
+MYSQL_PASSWORD=password
+```
+
+L'ORM utilisé est SQLAlchemy.
