@@ -1,5 +1,6 @@
 import os
-
+import re
+import joblib
 from flask import Flask, request, jsonify
 from flask.cli import load_dotenv
 
@@ -16,6 +17,11 @@ db_config = {
     'password': os.getenv('MYSQL_PASSWORD'),
     'database': os.getenv('MYSQL_DATABASE')
 }
+
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r'[^\w\s]', '', text)
+    return text
 
 @app.route('/')
 def hello_world():  # put application's code here
@@ -36,16 +42,15 @@ def analyze():
     if not data or 'tweets' not in data or not isinstance(data['tweets'], list):
         return jsonify({"error": "Format invalide"}), 400
 
-    tweets = data['tweets']
+    model = joblib.load('model.joblib')
+    vectorizer = joblib.load('vectorizer.joblib')
+    
+    cleaned = [clean_text(t) for t in data['tweets']]
+    transformed_tweets = vectorizer.transform(cleaned)
+    probas = model.predict_proba(transformed_tweets)[:, 1]
+    scores = {f"tweet{i}": float(2 * p - 1) for i, p in enumerate(probas)}
 
-
-    result = {}
-    for i in range(len(tweets)):
-        tweet_index = "tweet" + str(i)
-        result[tweet_index] = 0.5
-
-    return jsonify(result)
-
+    return jsonify(scores)
 
 if __name__ == '__main__':
     app.run()
