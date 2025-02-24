@@ -4,3 +4,4 @@ SQLAlchemy~=2.0.38
 PyMySQL~=1.1.1
 scikit-learn~=1.6.1
 joblib~=1.4.2
+python-dotenv~=1.0.1
