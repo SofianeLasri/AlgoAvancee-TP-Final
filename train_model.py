@@ -22,29 +22,47 @@ def train_model():
     tweets = db_session.query(Tweet).all()
 
     texts = [clean_text(tweet.text) for tweet in tweets]
-    labels = [1 if tweet.positive else 0 for tweet in tweets]
+    # labels = [1 if tweet.positive else 0 for tweet in tweets]
+
+    positive_labels = [1 if tweet.positive else 0 for tweet in tweets]
+    negative_labels = [1 if tweet.negative else 0 for tweet in tweets]
 
     vectorizer = CountVectorizer(stop_words=french_stopwords, max_features=100)
-    X = vectorizer.fit_transform(texts)
-    Y = labels
+    X_positive = vectorizer.fit_transform(texts)
+    X_negative = vectorizer.fit_transform(texts)
+    Y_positive = positive_labels
+    Y_negative = negative_labels
 
-    # Division des données
-    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+    X_train_positive, X_test_positive, y_train_positive, y_test_positive = train_test_split(X_positive, Y_positive, test_size=0.2, random_state=42)
+    X_train_negative, X_test_negative, y_train_negative, y_test_negative = train_test_split(X_negative, Y_negative, test_size=0.2, random_state=42)
 
-    model = LogisticRegression()
-    model.fit(X_train, y_train)
+    positive_model = LogisticRegression()
+    negative_model = LogisticRegression()
 
-    dump(model, 'model.joblib')
+    positive_model.fit(X_train_positive, y_train_positive)
+    negative_model.fit(X_train_negative, y_train_negative)
+
+    dump(positive_model, 'positive_model.joblib')
+    dump(negative_model, 'negative_model.joblib')
     dump(vectorizer, 'vectorizer.joblib')
+
     print("Model trained and saved to disk.")
 
-    y_pred = model.predict(X_test)
-    # Rapport de classification
-    print("Rapport de classification :")
-    print(classification_report(y_test, y_pred))
-    # Matrice de confusion
-    print("Matrice de confusion :")
-    print(confusion_matrix(y_test, y_pred))
+    print("-- DEBUG --")
+    y_pred_positive = positive_model.predict(X_test_positive)
+    y_pred_negative = negative_model.predict(X_test_negative)
+
+    print("Rapport de classification du modèle positif :")
+    print(classification_report(y_test_positive, y_pred_positive))
+
+    print("Matrice de confusion du modèle positif :")
+    print(confusion_matrix(y_test_positive, y_pred_positive))
+
+    print("Rapport de classification du modèle négatif :")
+    print(classification_report(y_test_negative, y_pred_negative))
+
+    print("Matrice de confusion du modèle négatif :")
+    print(confusion_matrix(y_test_negative, y_pred_negative))
 
 def clean_text(text):
     text = text.lower()
