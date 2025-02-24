@@ -4,11 +4,13 @@
 
 Il est nécessaire d'avoir Docker installé sur votre machine.
 
-Pour lancer le projet, il suffit de lancer la commande suivante :
+Pour lancer le projet, il suffit de copier le .env d'exemple et de lancer la commande suivante :
 
 ```bash
 docker-compose up
 ```
+
+Un cron se lance une fois par semaine pour entrainer le modèle.
 
 ## Utilisation
 

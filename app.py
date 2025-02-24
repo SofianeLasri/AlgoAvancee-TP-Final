@@ -20,14 +20,17 @@ db_config = {
     'database': os.getenv('MYSQL_DATABASE')
 }
 
+
 def clean_text(text):
     text = text.lower()
     text = re.sub(r'[^\w\s]', '', text)
     return text
 
+
 @app.route('/')
 def hello_world():  # put application's code here
     return 'Hello World!'
+
 
 # Je sais pas comment créer des commentaires similaires aux PhpDoc en Python mais on va faire comme ça :)
 # Nous n'acceptons que des requêtes POST donnant un objet JSON ayant cette structure :
@@ -44,17 +47,13 @@ def analyze():
     if not data or 'tweets' not in data or not isinstance(data['tweets'], list):
         return jsonify({"error": "Invalid format!"}), 400
 
-    positive_model = joblib.load('positive_model.joblib')
-    negative_model = joblib.load('negative_model.joblib')
+    model = joblib.load('positive_model.joblib')
     vectorizer = joblib.load('vectorizer.joblib')
-    
+
     cleaned = [clean_text(t) for t in data['tweets']]
     transformed_tweets = vectorizer.transform(cleaned)
-
-    positive_probs = positive_model.predict_proba(transformed_tweets)[:, 1]
-    negative_probs = negative_model.predict_proba(transformed_tweets)[:, 1]
-
-    scores = {f"tweet{i}": float(p - n) for i, p, n in zip(range(len(positive_probs)), positive_probs, negative_probs)}
+    probas = model.predict_proba(transformed_tweets)[:, 1]
+    scores = {f"tweet{i}": float(2 * p - 1) for i, p in enumerate(probas)}
 
     for i, tweet in enumerate(data['tweets']):
         tweet = Tweet(
@@ -65,8 +64,8 @@ def analyze():
         db_session.add(tweet)
         db_session.commit()
 
-    train_model()
     return jsonify(scores)
+
 
 if __name__ == '__main__':
     app.run()

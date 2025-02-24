@@ -68,3 +68,6 @@ def clean_text(text):
     text = text.lower()
     text = re.sub(r'[^\w\s]', '', text)
     return text
+
+if __name__ == '__main__':
+    train_model()
